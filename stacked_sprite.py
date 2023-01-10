@@ -3,8 +3,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from scene import Scene
 
-from math import atan2, degrees
-from random import randint
 import pygame
 import time
 
@@ -56,21 +54,6 @@ class StackedSprite(VisibleSprite):
 
         print(f"Cache for '{cls.__name__}' created in {round(time.time() - start, 5)} seconds")
 
-    def update(self) -> None:
-        ...
-
     def draw(self) -> None:
         self.image = self.cls._cache[int(self.rot % 360)]
-        self.manager.screen.blit(self.image, self.pos - VEC(self.image.get_size()) // 2)
-
-class Car(StackedSprite):
-    _res = "car.png"
-    _size = VEC(10, 16)
-    _frames = 9
-
-    def __init__(self, scene: Scene) -> None:
-        super().__init__(scene, Layers.PLAYER, CENTER, 0)
-
-    def update(self) -> None:
-        m_pos = VEC(pygame.mouse.get_pos())
-        self.rot = degrees(atan2(*-(m_pos - CENTER)))
+        self.manager.screen.blit(self.image, self.pos - VEC(self.image.get_size()) // 2 - self.scene.camera.pos)

@@ -3,25 +3,23 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from scene import Scene
 
-from abc import ABC as AbstractClass
-from abc import abstractmethod
 from enum import Enum, auto
 
 class Layers(Enum):
     PLAYER = auto()
 
-class Sprite(AbstractClass):
+class Sprite:
     def __init__(self, scene: Scene, layer: int | Layers) -> None:
         self._layer = Layers(layer)
         self.scene = scene
         self.manager = scene.manager
 
-    @abstractmethod
     def update(self) -> None:
+        # Hook to be overwritten
         pass
 
-    @abstractmethod
     def draw(self) -> None:
+        # Hook to be overwritten
         pass
 
     def kill(self) -> None:
@@ -32,12 +30,12 @@ class VisibleSprite(Sprite):
         super().__init__(scene, layer)
         self.scene.sprite_manager.add(self)
 
-    @abstractmethod
     def update(self) -> None:
+        # Hook to be overwritten
         pass
 
-    @abstractmethod
     def draw(self) -> None:
+        # Hook to be overwritten
         pass
 
 class SpriteManager:
