@@ -12,8 +12,8 @@ class MainGame(Scene):
 
         Car.create_cache()
 
-        for _ in range(100):
-            self.car = Car(self)
+        # for _ in range(100):
+        self.car = Car(self)
 
     def update(self) -> None:
         super().update()

@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from scene import Scene
 
-from pygame.math import Vector2 as VEC
+from math import atan2, degrees
 from random import randint
 import pygame
 import time
@@ -21,7 +21,7 @@ class CacheNotCreatedException(Exception):
         return f"Call 'create_cache' on class '{self.cls.__name__}' to initialize cache."
 
 class StackedSprite(VisibleSprite):
-    def __init__(self, scene: Scene, layer: Layers, res: str, pos: tuple[int, int], rot: int) -> None:
+    def __init__(self, scene: Scene, layer: Layers, pos: tuple[int, int], rot: int) -> None:
         super().__init__(scene, layer)
         self.cls = self.__class__
         try:
@@ -29,7 +29,6 @@ class StackedSprite(VisibleSprite):
         except AttributeError:
             raise CacheNotCreatedException(self.cls)
 
-        self.res = res
         self.pos = VEC(pos)
         self.rot = rot
 
@@ -58,7 +57,7 @@ class StackedSprite(VisibleSprite):
         print(f"Cache for '{cls.__name__}' created in {round(time.time() - start, 5)} seconds")
 
     def update(self) -> None:
-        self.rot += 40 * self.manager.dt
+        ...
 
     def draw(self) -> None:
         self.image = self.cls._cache[int(self.rot % 360)]
@@ -70,11 +69,8 @@ class Car(StackedSprite):
     _frames = 9
 
     def __init__(self, scene: Scene) -> None:
-        pos = randint(40, WIDTH - 40), randint(40, HEIGHT - 40)
-        super().__init__(scene, Layers.PLAYER, self.__class__._res, pos, randint(0, 359))
+        super().__init__(scene, Layers.PLAYER, CENTER, 0)
 
     def update(self) -> None:
-        super().update()
-
-    def draw(self) -> None:
-        super().draw()
+        m_pos = VEC(pygame.mouse.get_pos())
+        self.rot = degrees(atan2(*-(m_pos - CENTER)))
