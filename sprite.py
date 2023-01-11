@@ -6,6 +6,7 @@ if TYPE_CHECKING:
 from enum import Enum, auto
 
 class Layers(Enum):
+    BUILDING = auto()
     PLAYER = auto()
 
 class Sprite:

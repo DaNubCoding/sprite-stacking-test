@@ -16,6 +16,7 @@ class Player(StackedSprite):
     _res = "car.png"
     _size = VEC(10, 16)
     _frames = 9
+    _pixel = 6
 
     def __init__(self, scene: Scene) -> None:
         super().__init__(scene, Layers.PLAYER, CENTER, 0)
