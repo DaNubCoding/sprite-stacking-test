@@ -8,6 +8,10 @@ class VEC(Vector2):
         except ValueError:
             return VEC(0, 0)
 
+    def scale_to_length(self, value: float) -> None:
+        super().scale_to_length(value)
+        return self
+
 WIDTH, HEIGHT = 1024, 768
 SIZE = VEC(WIDTH, HEIGHT)
 CENTER = SIZE // 2
