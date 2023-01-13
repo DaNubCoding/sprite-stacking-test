@@ -19,7 +19,7 @@ class Player(StackedSprite):
     _pixel = 4
 
     def __init__(self, scene: Scene) -> None:
-        super().__init__(scene, Layers.PLAYER, CENTER, 0)
+        super().__init__(scene, Layers.WORLD, (0, 0), 0)
         self.vel = VEC(0, 0)
         self.backing = False
 
@@ -49,3 +49,5 @@ class Player(StackedSprite):
             self.vel.clamp_magnitude_ip(self.backward_speed)
 
         self.pos += self.vel * self.manager.dt
+
+        self.y_sort = self.screen_pos.y + self.image.get_height() * 0.8

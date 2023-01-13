@@ -19,4 +19,4 @@ class Building(StackedSprite):
     _pixel = 8
 
     def __init__(self, scene: Scene, pos: tuple[int, int], rot: int) -> None:
-        super().__init__(scene, Layers.BUILDING, pos, rot)
+        super().__init__(scene, Layers.WORLD, pos, rot)

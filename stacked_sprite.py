@@ -28,7 +28,10 @@ class StackedSprite(VisibleSprite):
             raise CacheNotCreatedException(self.cls)
 
         self.pos = VEC(pos)
+        self.screen_pos = self.pos.copy()
         self.rot = rot
+        self.y_sort = self.screen_pos.y
+        self.image = self.cls._cache[int(self.rot)]
 
     @classmethod
     def create_cache(cls) -> None:
@@ -54,6 +57,10 @@ class StackedSprite(VisibleSprite):
 
         print(f"Cache for '{cls.__name__}' created in {round(time.time() - start, 5)} seconds")
 
+    def update(self) -> None:
+        self.y_sort = self.screen_pos.y + self.image.get_height()
+
     def draw(self) -> None:
         self.image = self.cls._cache[int((self.rot - self.scene.camera.rot) % 360)]
-        self.manager.screen.blit(self.image, (self.pos - self.scene.camera.pos).rotate(self.scene.camera.rot) - VEC(self.image.get_size()) // 2 + SIZE // 2)
+        self.screen_pos = (self.pos - self.scene.camera.pos).rotate(self.scene.camera.rot) - VEC(self.image.get_size()) // 2 + SIZE // 2
+        self.manager.screen.blit(self.image, self.screen_pos)

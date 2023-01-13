@@ -6,8 +6,7 @@ if TYPE_CHECKING:
 from enum import Enum, auto
 
 class Layers(Enum):
-    BUILDING = auto()
-    PLAYER = auto()
+    WORLD = auto()
 
 class Sprite:
     def __init__(self, scene: Scene, layer: int | Layers) -> None:
@@ -60,3 +59,9 @@ class SpriteManager:
 
     def remove(self, sprite: Sprite) -> None:
         self.layers[sprite._layer].remove(sprite)
+
+class SortedSpriteManager(SpriteManager):
+    def update(self) -> None:
+        for layer in self.layers:
+            self.layers[layer] = sorted(self.layers[layer], key=lambda obj: obj.y_sort)
+        super().update()

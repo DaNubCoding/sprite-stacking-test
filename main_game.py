@@ -5,6 +5,7 @@ if TYPE_CHECKING:
 
 from random import randint
 
+from sprite import SortedSpriteManager
 from building import Building
 from camera import Camera
 from player import Player
@@ -13,18 +14,16 @@ from constants import *
 
 class MainGame(Scene):
     def __init__(self, manager: Manager, previous_scene: Scene) -> None:
-        super().__init__(manager, previous_scene)
+        super().__init__(manager, previous_scene, SortedSpriteManager)
 
         Player.create_cache()
         self.player = Player(self)
         self.camera = Camera(self.player)
 
         Building.create_cache()
-        Building(self, (100, 100), 100)
-        Building(self, (300, 150), 50)
-        Building(self, (800, 450), 160)
-        Building(self, (400, 600), 250)
-        Building(self, (600, 50), 200)
+        for x in range(-2000, 2001, 250):
+            for y in range(-2000, 2001, 250):
+                Building(self, (x + randint(-80, 80), y + randint(-80, 80)), randint(0, 359))
 
     def update(self) -> None:
         self.camera.update()
