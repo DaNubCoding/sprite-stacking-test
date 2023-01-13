@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from scene import Scene
 
-from math import atan2, degrees
 from pygame.locals import *
+from math import tan
 import pygame
 
 from stacked_sprite import StackedSprite
@@ -16,7 +16,7 @@ class Player(StackedSprite):
     _res = "car.png"
     _size = VEC(10, 16)
     _frames = 9
-    _pixel = 6
+    _pixel = 4
 
     def __init__(self, scene: Scene) -> None:
         super().__init__(scene, Layers.PLAYER, CENTER, 0)
@@ -27,11 +27,14 @@ class Player(StackedSprite):
         self.max_speed = 500
 
     def update(self) -> None:
-        m_pos = VEC(pygame.mouse.get_pos())
-        self.rot = degrees(atan2(*(CENTER - m_pos)))
-
+        if self.manager.key_presses[K_a]:
+            self.rot += 100 * self.manager.dt
+        if self.manager.key_presses[K_d]:
+            self.rot -= 100 * self.manager.dt
         if self.manager.key_presses[K_w]:
-            self.vel += (m_pos - CENTER).normalize() * self.acc * self.manager.dt
+            heading = VEC(0, -1)
+            heading.scale_to_length(self.acc)
+            self.vel += heading.rotate(-self.rot) * self.manager.dt
 
         # Apply friction
         dec = self.vel.normalize() * self.friction * self.manager.dt

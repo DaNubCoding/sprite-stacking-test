@@ -16,7 +16,7 @@ class Building(StackedSprite):
     _res = "building.png"
     _size = VEC(11, 13)
     _frames = 11
-    _pixel = 12
+    _pixel = 8
 
     def __init__(self, scene: Scene, pos: tuple[int, int], rot: int) -> None:
         super().__init__(scene, Layers.BUILDING, pos, rot)

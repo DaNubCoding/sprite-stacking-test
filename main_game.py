@@ -22,6 +22,9 @@ class MainGame(Scene):
         Building.create_cache()
         Building(self, (100, 100), 100)
         Building(self, (300, 150), 50)
+        Building(self, (800, 450), 160)
+        Building(self, (400, 600), 250)
+        Building(self, (600, 50), 200)
 
     def update(self) -> None:
         self.camera.update()

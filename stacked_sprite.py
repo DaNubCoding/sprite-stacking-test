@@ -55,5 +55,5 @@ class StackedSprite(VisibleSprite):
         print(f"Cache for '{cls.__name__}' created in {round(time.time() - start, 5)} seconds")
 
     def draw(self) -> None:
-        self.image = self.cls._cache[int(self.rot % 360)]
-        self.manager.screen.blit(self.image, self.pos - VEC(self.image.get_size()) // 2 - self.scene.camera.pos)
+        self.image = self.cls._cache[int((self.rot - self.scene.camera.rot) % 360)]
+        self.manager.screen.blit(self.image, (self.pos - self.scene.camera.pos).rotate(self.scene.camera.rot) - VEC(self.image.get_size()) // 2 + SIZE // 2)
