@@ -63,4 +63,5 @@ class StackedSprite(VisibleSprite):
     def draw(self) -> None:
         self.image = self.cls._cache[int((self.rot - self.scene.camera.rot) % 360)]
         self.screen_pos = (self.pos - self.scene.camera.pos).rotate(self.scene.camera.rot) - VEC(self.image.get_size()) // 2 + SIZE // 2
+        if not -self.image.get_width() < self.screen_pos.x < WIDTH or not -self.image.get_height() < self.screen_pos.y < HEIGHT: return
         self.manager.screen.blit(self.image, self.screen_pos)
