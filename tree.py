@@ -13,6 +13,7 @@ class Tree(StackedSprite):
     _size = VEC(26, 24)
     _frames = 40
     _pixel = 6
+    _pivot_offset = VEC(0, 1)
 
     def __init__(self, scene: Scene, pos: tuple[int, int], rot: int) -> None:
         super().__init__(scene, Layers.WORLD, pos, rot)

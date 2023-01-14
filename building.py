@@ -13,6 +13,7 @@ class Building(StackedSprite):
     _size = VEC(11, 13)
     _frames = 11
     _pixel = 12
+    _pivot_offset = VEC(-1, 0)
 
     def __init__(self, scene: Scene, pos: tuple[int, int], rot: int) -> None:
         super().__init__(scene, Layers.WORLD, pos, rot)

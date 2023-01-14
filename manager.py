@@ -19,6 +19,7 @@ class Manager:
         self.clock = pygame.time.Clock()
 
         self.scene = MainGame(self, None)
+        self.debug = False
 
     def run(self) -> None:
         while True:
@@ -41,6 +42,8 @@ class Manager:
 
         if QUIT in self.events:
             self.quit()
+        elif K_F3 in self.key_downs:
+            self.debug = not self.debug
 
     def quit(self) -> None:
         pygame.quit()

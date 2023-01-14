@@ -17,6 +17,7 @@ class Player(StackedSprite):
     _size = VEC(10, 16)
     _frames = 9
     _pixel = 4
+    _pivot_offset = VEC(0, 3)
 
     def __init__(self, scene: Scene) -> None:
         super().__init__(scene, Layers.WORLD, (0, 0), 0)
@@ -50,4 +51,4 @@ class Player(StackedSprite):
 
         self.pos += self.vel * self.manager.dt
 
-        self.y_sort = self.screen_pos.y + self.image.get_height() * 0.8
+        super().update()
