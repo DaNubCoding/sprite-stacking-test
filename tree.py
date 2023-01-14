@@ -8,11 +8,11 @@ from sprite import Layers
 from constants import *
 from utils import *
 
-class Building(StackedSprite):
-    _res = "building.png"
-    _size = VEC(11, 13)
-    _frames = 11
-    _pixel = 12
+class Tree(StackedSprite):
+    _res = "tree.png"
+    _size = VEC(26, 24)
+    _frames = 40
+    _pixel = 6
 
     def __init__(self, scene: Scene, pos: tuple[int, int], rot: int) -> None:
         super().__init__(scene, Layers.WORLD, pos, rot)

@@ -14,7 +14,7 @@ class Camera:
         self.rot = self.player.rot
 
     def update(self) -> None:
-        tick_offset = self.player.pos - self.pos
+        tick_offset = self.player.pos - self.pos + self.player.vel * 0.3
         tick_offset = snap(tick_offset, VEC(), VEC(1, 1))
         self.pos += tick_offset * 5 * self.manager.dt
 

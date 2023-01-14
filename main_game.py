@@ -10,6 +10,7 @@ from building import Building
 from camera import Camera
 from player import Player
 from scene import Scene
+from tree import Tree
 from constants import *
 
 class MainGame(Scene):
@@ -21,9 +22,14 @@ class MainGame(Scene):
         self.camera = Camera(self.player)
 
         Building.create_cache()
-        for x in range(-2000, 2001, 250):
-            for y in range(-2000, 2001, 250):
+        for x in range(-3000, 3001, 400):
+            for y in range(-3000, 3001, 400):
                 Building(self, (x + randint(-80, 80), y + randint(-80, 80)), randint(0, 359))
+
+        Tree.create_cache()
+        for x in range(-3000 - 200, 3001 - 200, 400):
+            for y in range(-3000 - 200, 3001 - 200, 400):
+                Tree(self, (x + randint(-80, 80), y + randint(-80, 80)), randint(0, 359))
 
     def update(self) -> None:
         self.camera.update()
