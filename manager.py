@@ -12,7 +12,7 @@ class AbortScene(Exception):
 
 class Manager:
     def __init__(self) -> None:
-        self.FLAGS = DOUBLEBUF | SCALED
+        self.FLAGS = DOUBLEBUF | SCALED | RESIZABLE
 
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), self.FLAGS)

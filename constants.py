@@ -12,7 +12,7 @@ class VEC(Vector2):
         super().scale_to_length(value)
         return self
 
-WIDTH, HEIGHT = 1024, 768
+WIDTH, HEIGHT = 1024, 576
 SIZE = VEC(WIDTH, HEIGHT)
 CENTER = SIZE // 2
 FPS = 1000
