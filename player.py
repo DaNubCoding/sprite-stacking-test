@@ -15,7 +15,7 @@ from utils import *
 class Player(StackedSprite):
     _res = "car.png"
     _size = VEC(10, 16)
-    _frames = 9
+    _frames = 8
     _pixel = 4
     _pivot_offset = VEC(0, 3)
 

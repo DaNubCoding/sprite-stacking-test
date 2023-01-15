@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from scene import Scene
 
+from pygame.locals import *
+import itertools
 import pygame
 import time
 
@@ -44,17 +46,25 @@ class StackedSprite(VisibleSprite):
 
         cls._pivot_cache, cls._cache = {}, {}
         images = [spritesheets[cls._res].subsurface(0, i * cls._size.y, cls._size.x, cls._size.y) for i in range(cls._frames)]
+        for image in images:
+            image.set_colorkey(COLORKEY)
+
         for rot in range(360):
             rotated_size = VEC(pygame.transform.rotate(pygame.transform.scale_by(images[0], cls._pixel), rot).get_size())
-            surface = pygame.Surface((rotated_size.x, rotated_size.y + (cls._frames - 1) * cls._pixel))
+            surface = pygame.Surface((rotated_size.x, rotated_size.y + (cls._frames - 1) * cls._pixel), SRCALPHA)
             surface.fill(COLORKEY)
-            surface.set_colorkey(COLORKEY)
             cls._pivot_cache[rot] = VEC(surface.get_width() // 2, surface.get_height() - rotated_size.y // 2) + cls._pivot_offset.rotate(-rot) * cls._pixel
             for i, image in enumerate(images):
-                image = pygame.transform.rotate(pygame.transform.scale_by(image, cls._pixel), rot)
+                scaled_image = pygame.transform.scale_by(image, cls._pixel)
+                image = pygame.transform.rotate(scaled_image, rot)
+                mask = pygame.mask.from_surface(image)
+                outlines = [component.outline() for component in mask.connected_components()]
+                for pos in list(itertools.chain(*outlines)):
+                    image.set_at(pos, tuple(map(lambda x: x * 0.9, image.get_at(pos))))
                 for j in range(0, cls._pixel):
                     surface.blit(image, (0, surface.get_height() - rotated_size.y - i * cls._pixel - j))
-            cls._cache[rot] = surface
+            surface.set_colorkey(COLORKEY)
+            cls._cache[rot] = surface.convert()
 
         print(f"Cache for '{cls.__name__}' created in {round(time.time() - start, 5)} seconds")
 
