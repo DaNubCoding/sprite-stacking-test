@@ -46,23 +46,44 @@ class StackedSprite(VisibleSprite):
 
         cls._pivot_cache, cls._cache = {}, {}
         images = [spritesheets[cls._res].subsurface(0, i * cls._size.y, cls._size.x, cls._size.y) for i in range(cls._frames)]
-        for image in images:
+        for i, image in enumerate(images):
             image.set_colorkey(COLORKEY)
+            images[i] = pygame.transform.scale_by(image, cls._pixel)
+
+        edges = [{"left": [], "right": [], "top": [], "bottom": []} for _ in range(cls._frames)]
+        for i, image in enumerate(images):
+            width, height = image.get_size()
+            for y in range(height):
+                for x in range(width):
+                    pixel = image.get_at((x, y))
+                    left_pixel = image.get_at((x - 1, y)) if x > 0 else COLORKEY
+                    right_pixel = image.get_at((x + 1, y)) if x < width - 1 else COLORKEY
+                    top_pixel = image.get_at((x, y - 1)) if y > 0 else COLORKEY
+                    bottom_pixel = image.get_at((x, y + 1)) if y < height - 1 else COLORKEY
+                    if pixel == COLORKEY: continue
+                    if left_pixel == COLORKEY:
+                        edges[i]["left"].append((x, y))
+                    elif right_pixel == COLORKEY:
+                        edges[i]["right"].append((x, y))
+                    elif top_pixel == COLORKEY:
+                        edges[i]["top"].append((x, y))
+                    elif bottom_pixel == COLORKEY:
+                        edges[i]["bottom"].append((x, y))
 
         for rot in range(360):
-            rotated_size = VEC(pygame.transform.rotate(pygame.transform.scale_by(images[0], cls._pixel), rot).get_size())
+            rotated_size = VEC(pygame.transform.rotate(images[0], rot).get_size())
             surface = pygame.Surface((rotated_size.x, rotated_size.y + (cls._frames - 1) * cls._pixel), SRCALPHA)
             surface.fill(COLORKEY)
             cls._pivot_cache[rot] = VEC(surface.get_width() // 2, surface.get_height() - rotated_size.y // 2) + cls._pivot_offset.rotate(-rot) * cls._pixel
-            for i, image in enumerate(images):
-                scaled_image = pygame.transform.scale_by(image, cls._pixel)
-                image = pygame.transform.rotate(scaled_image, rot)
-                mask = pygame.mask.from_surface(image)
-                outlines = [component.outline() for component in mask.connected_components()]
-                for pos in list(itertools.chain(*outlines)):
-                    image.set_at(pos, tuple(map(lambda x: x * 0.9, image.get_at(pos))))
+            for i, image in enumerate(images.copy()):
+                shaded_image = image.copy()
+                for side in edges[i]:
+                    for pos in edges[i][side]:
+                        darkened_color = (color := image.get_at(pos))[0] * SHADING_PERC[side], color[1] * SHADING_PERC[side], color[2] * SHADING_PERC[side]
+                        shaded_image.set_at(pos, darkened_color)
+                rotated_image = pygame.transform.rotate(shaded_image, rot)
                 for j in range(0, cls._pixel):
-                    surface.blit(image, (0, surface.get_height() - rotated_size.y - i * cls._pixel - j))
+                    surface.blit(rotated_image, (0, surface.get_height() - rotated_size.y - i * cls._pixel - j))
             surface.set_colorkey(COLORKEY)
             cls._cache[rot] = surface.convert()
 

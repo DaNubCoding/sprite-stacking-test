@@ -17,4 +17,5 @@ SIZE = VEC(WIDTH, HEIGHT)
 CENTER = SIZE // 2
 FPS = 1000
 
-COLORKEY = (0, 255, 255)
+COLORKEY = (0, 255, 255, 255)
+SHADING_PERC = {"left": 0.7, "top": 0.78, "right": 0.86, "bottom": 0.94}
