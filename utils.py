@@ -1,10 +1,16 @@
 from multipledispatch import dispatch
+from typing import Generator
 
 from constants import *
 
 def sign(num: int | float) -> int:
     """Returns the sign of the num (+/-) as -1, 0, or 1"""
     return (num > 0) - (num < 0)
+
+def range_2d(width: int, height: int) -> Generator:
+    for y in range(height):
+        for x in range(width):
+            yield (x, y)
 
 # The snap function snaps a value to a central value if it enters a certain offset around the central value
 @dispatch((int, float), (int, float), (int, float))

@@ -11,6 +11,7 @@ import time
 from sprite import VisibleSprite, Layers
 from images import spritesheets
 from constants import *
+from utils import *
 
 class CacheNotCreatedException(Exception):
     def __init__(self, cls) -> None:
@@ -53,22 +54,19 @@ class StackedSprite(VisibleSprite):
         edges = [{"left": [], "right": [], "top": [], "bottom": []} for _ in range(cls._frames)]
         for i, image in enumerate(images):
             width, height = image.get_size()
-            for y in range(height):
-                for x in range(width):
-                    pixel = image.get_at((x, y))
-                    left_pixel = image.get_at((x - 1, y)) if x > 0 else COLORKEY
-                    right_pixel = image.get_at((x + 1, y)) if x < width - 1 else COLORKEY
-                    top_pixel = image.get_at((x, y - 1)) if y > 0 else COLORKEY
-                    bottom_pixel = image.get_at((x, y + 1)) if y < height - 1 else COLORKEY
-                    if pixel == COLORKEY: continue
-                    if left_pixel == COLORKEY:
-                        edges[i]["left"].append((x, y))
-                    elif right_pixel == COLORKEY:
-                        edges[i]["right"].append((x, y))
-                    elif top_pixel == COLORKEY:
-                        edges[i]["top"].append((x, y))
-                    elif bottom_pixel == COLORKEY:
-                        edges[i]["bottom"].append((x, y))
+            mask = pygame.mask.from_surface(image)
+            for x, y in range_2d(width, height):
+                has_color = mask.get_at((x, y))
+                if not has_color: continue
+                side_pixels = {
+                    "left": mask.get_at((x - 1, y)) if x > 0 else False, 
+                    "right": mask.get_at((x + 1, y)) if x < width - 1 else False,
+                    "top": mask.get_at((x, y - 1)) if y > 0 else False,
+                    "bottom": mask.get_at((x, y + 1)) if y < height - 1 else False
+                }
+                for side, has_color in side_pixels.items():
+                    if has_color: continue
+                    edges[i][side].append((x, y))
 
         for rot in range(360):
             rotated_size = VEC(pygame.transform.rotate(images[0], rot).get_size())
@@ -79,7 +77,7 @@ class StackedSprite(VisibleSprite):
                 shaded_image = image.copy()
                 for side in edges[i]:
                     for pos in edges[i][side]:
-                        darkened_color = (color := image.get_at(pos))[0] * SHADING_PERC[side], color[1] * SHADING_PERC[side], color[2] * SHADING_PERC[side]
+                        darkened_color = (color := image.get_at(pos))[0] * (perc := SHADING_PERC[side]), color[1] * perc, color[2] * perc
                         shaded_image.set_at(pos, darkened_color)
                 rotated_image = pygame.transform.rotate(shaded_image, rot)
                 for j in range(0, cls._pixel):
