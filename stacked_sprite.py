@@ -77,7 +77,8 @@ class StackedSprite(VisibleSprite):
                 shaded_image = image.copy()
                 for side in edges[i]:
                     for pos in edges[i][side]:
-                        darkened_color = (color := image.get_at(pos))[0] * (perc := SHADING_PERC[side]), color[1] * perc, color[2] * perc
+                        perc = 0.6 + (rot + SHADING[side]) % 360 / 360 * 0.4
+                        darkened_color = (color := image.get_at(pos))[0] * perc, color[1] * perc, color[2] * perc
                         shaded_image.set_at(pos, darkened_color)
                 rotated_image = pygame.transform.rotate(shaded_image, rot)
                 for j in range(0, cls._pixel):
