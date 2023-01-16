@@ -18,4 +18,4 @@ CENTER = SIZE // 2
 FPS = 1000
 
 COLORKEY = (0, 255, 255, 255)
-SHADING = {"left": 0, "top": 90, "right": 180, "bottom": 270}
+SHADING = {"left": 0.7, "top": 0.78, "bottom": 0.86, "right": 0.94}

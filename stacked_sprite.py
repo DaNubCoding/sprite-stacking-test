@@ -51,7 +51,6 @@ class StackedSprite(VisibleSprite):
             image.set_colorkey(COLORKEY)
             images[i] = pygame.transform.scale_by(image, cls._pixel)
 
-        edges = [{"left": [], "right": [], "top": [], "bottom": []} for _ in range(cls._frames)]
         for i, image in enumerate(images):
             width, height = image.get_size()
             mask = pygame.mask.from_surface(image)
@@ -66,7 +65,9 @@ class StackedSprite(VisibleSprite):
                 }
                 for side, has_color in side_pixels.items():
                     if has_color: continue
-                    edges[i][side].append((x, y))
+                    perc = SHADING[side]
+                    darkened_color = (color := image.get_at((x, y)))[0] * perc, color[1] * perc, color[2] * perc
+                    image.set_at((x, y), darkened_color)
 
         for rot in range(360):
             rotated_size = VEC(pygame.transform.rotate(images[0], rot).get_size())
@@ -74,13 +75,7 @@ class StackedSprite(VisibleSprite):
             surface.fill(COLORKEY)
             cls._pivot_cache[rot] = VEC(surface.get_width() // 2, surface.get_height() - rotated_size.y // 2) + cls._pivot_offset.rotate(-rot) * cls._pixel
             for i, image in enumerate(images.copy()):
-                shaded_image = image.copy()
-                for side in edges[i]:
-                    for pos in edges[i][side]:
-                        perc = 0.6 + (rot + SHADING[side]) % 360 / 360 * 0.4
-                        darkened_color = (color := image.get_at(pos))[0] * perc, color[1] * perc, color[2] * perc
-                        shaded_image.set_at(pos, darkened_color)
-                rotated_image = pygame.transform.rotate(shaded_image, rot)
+                rotated_image = pygame.transform.rotate(image, rot)
                 for j in range(0, cls._pixel):
                     surface.blit(rotated_image, (0, surface.get_height() - rotated_size.y - i * cls._pixel - j))
             surface.set_colorkey(COLORKEY)
