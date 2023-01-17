@@ -12,6 +12,17 @@ def range_2d(width: int, height: int) -> Generator:
         for x in range(width):
             yield (x, y)
 
+def visible_sides(angle: int) -> Generator:
+    if 0 < angle < 180: yield "left"
+    if 90 < angle < 270: yield "top"
+    if 180 < angle < 360: yield "right"
+    if angle < 90 or angle > 270: yield "bottom"
+
+def sublists(l: list) -> Generator:
+    for sublist in l:
+        for item in sublist:
+            yield item
+
 # The snap function snaps a value to a central value if it enters a certain offset around the central value
 @dispatch((int, float), (int, float), (int, float))
 def snap(val: int | float, snap_val: int | float, offset: int | float):
