@@ -6,12 +6,13 @@ if TYPE_CHECKING:
 from random import randint
 
 from sprite import SortedSpriteManager
+from profiling import profile
 from building import Building
 from camera import Camera
 from player import Player
 from scene import Scene
-from tree import Tree
 from constants import *
+from tree import Tree
 
 class MainGame(Scene):
     def __init__(self, manager: Manager, previous_scene: Scene) -> None:
@@ -21,7 +22,7 @@ class MainGame(Scene):
         self.player = Player(self)
         self.camera = Camera(self.player)
 
-        Building.create_cache()
+        profile(Building.create_cache)
         for x in range(-3000, 3001, 400):
             for y in range(-3000, 3001, 400):
                 Building(self, (x + randint(-80, 80), y + randint(-80, 80)), randint(0, 359))

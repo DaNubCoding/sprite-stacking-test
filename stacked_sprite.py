@@ -4,7 +4,6 @@ if TYPE_CHECKING:
     from scene import Scene
 
 from pygame.locals import *
-import itertools
 import pygame
 import time
 
@@ -51,7 +50,7 @@ class StackedSprite(VisibleSprite):
             image.set_colorkey(COLORKEY)
             images[i] = pygame.transform.scale_by(image, cls._pixel)
 
-        edges = [{"left": [], "right": [], "top": [], "bottom": []} for _ in range(cls._frames)]
+        edges = [{side: pygame.Surface((images[i].get_size())) for side in ["left", "right", "top", "bottom"]} for i in range(cls._frames)]
         for i, image in enumerate(images):
             width, height = image.get_size()
             mask = pygame.mask.from_surface(image)
@@ -66,17 +65,18 @@ class StackedSprite(VisibleSprite):
                 }
                 for side, has_color in side_pixels.items():
                     if has_color: continue
-                    edges[i][side].append((x, y))
+                    edges[i][side].set_at((x, y), transform_color(lambda x: x * (1 - SHADING[side]), image.get_at((x, y))))
+                    break
 
         for rot in range(360):
             rotated_size = VEC(pygame.transform.rotate(images[0], rot).get_size())
             surface = pygame.Surface((rotated_size.x, rotated_size.y + (cls._frames - 1) * cls._pixel), SRCALPHA)
             surface.fill(COLORKEY)
             cls._pivot_cache[rot] = VEC(surface.get_width() // 2, surface.get_height() - rotated_size.y // 2) + cls._pivot_offset.rotate(-rot) * cls._pixel
-            for i, image in enumerate(images.copy()):
+            for i, image in enumerate(images):
                 shaded_image = image.copy()
-                for pos in sublists(edges[i][side] for side in visible_sides(rot)):
-                    shaded_image.set_at(pos, ((color := image.get_at(pos))[0] * (perc := SHADING[side]), color[1] * perc, color[2] * perc))
+                for side in visible_sides(rot):
+                    shaded_image.blit(edges[i][side], (0, 0), special_flags=BLEND_RGB_SUB)
                 rotated_image = pygame.transform.rotate(shaded_image, rot)
                 for j in range(0, cls._pixel):
                     surface.blit(rotated_image, (0, surface.get_height() - rotated_size.y - i * cls._pixel - j))

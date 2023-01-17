@@ -1,5 +1,5 @@
+from typing import Generator, Callable
 from multipledispatch import dispatch
-from typing import Generator
 
 from constants import *
 
@@ -22,6 +22,9 @@ def sublists(l: list) -> Generator:
     for sublist in l:
         for item in sublist:
             yield item
+
+def transform_color(func: Callable, color: tuple[int, int, int]) -> tuple[int, int, int]:
+    return func(color[0]), func(color[1]), func(color[2])
 
 # The snap function snaps a value to a central value if it enters a certain offset around the central value
 @dispatch((int, float), (int, float), (int, float))
