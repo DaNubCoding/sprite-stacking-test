@@ -22,7 +22,7 @@ class MainGame(Scene):
         self.player = Player(self)
         self.camera = Camera(self.player)
 
-        profile(Building.create_cache)
+        Building.create_cache()
         for x in range(-3000, 3001, 400):
             for y in range(-3000, 3001, 400):
                 Building(self, (x + randint(-80, 80), y + randint(-80, 80)), randint(0, 359))
