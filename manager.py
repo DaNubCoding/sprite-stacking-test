@@ -1,3 +1,4 @@
+from pygame._sdl2.video import Window, Renderer
 from pygame.locals import *
 from enum import Enum
 import pygame
@@ -12,10 +13,9 @@ class AbortScene(Exception):
 
 class Manager:
     def __init__(self) -> None:
-        self.FLAGS = DOUBLEBUF | SCALED | RESIZABLE
-
-        pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), self.FLAGS)
+        self.window = Window("Sprite Stacking Game", (WIDTH, HEIGHT))
+        self.screen = Renderer(self.window)
+        self.screen.draw_color = (30, 30, 30, 255)
         self.clock = pygame.time.Clock()
 
         self.scene = MainGame(self, None)
@@ -30,10 +30,10 @@ class Manager:
                 self.scene.draw()
             except AbortScene:
                 continue
-            pygame.display.flip()
+            self.screen.present()
 
     def update(self) -> None:
-        pygame.display.set_caption(f"Sprite Stacking Game | {round(self.clock.get_fps())}")
+        self.window.title = f"Sprite Stacking Game | {round(self.clock.get_fps())}"
 
         self.events = {event.type: event for event in pygame.event.get()}
         self.key_downs = {event.key: event for event in self.events.values() if event.type == KEYDOWN}

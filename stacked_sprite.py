@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from scene import Scene
 
+from pygame._sdl2.video import Texture
 from pygame.locals import *
 import pygame
 import time
@@ -36,7 +37,7 @@ class StackedSprite(VisibleSprite):
         self.image = self.cls._cache[int(self.rot)]
 
     @classmethod
-    def create_cache(cls) -> None:
+    def create_cache(cls, renderer) -> None:
         try:
             cls._res, cls._size, cls._frames, cls._pixel, cls._pivot_offset
         except AttributeError as error:
@@ -81,7 +82,7 @@ class StackedSprite(VisibleSprite):
                 for j in range(0, cls._pixel):
                     surface.blit(rotated_image, (0, surface.get_height() - rotated_size.y - i * cls._pixel - j))
             surface.set_colorkey(COLORKEY)
-            cls._cache[rot] = surface.convert()
+            cls._cache[rot] = Texture.from_surface(renderer, surface)
 
         print(f"Cache for '{cls.__name__}' created in {round(time.time() - start, 5)} seconds")
 
@@ -91,8 +92,8 @@ class StackedSprite(VisibleSprite):
     def draw(self) -> None:
         self.image = self.cls._cache[screen_rot := int((self.rot - self.scene.camera.rot) % 360)]
         self.screen_pos = (self.pos - self.scene.camera.pos).rotate(self.scene.camera.rot) + SIZE // 2 - self.cls._pivot_cache[screen_rot]
-        if not -self.image.get_width() < self.screen_pos.x < WIDTH or not -self.image.get_height() < self.screen_pos.y < HEIGHT: return
-        self.manager.screen.blit(self.image, self.screen_pos)
+        if not -self.image.get_rect().width < self.screen_pos.x < WIDTH or not -self.image.get_rect().height < self.screen_pos.y < HEIGHT: return
+        self.manager.screen.blit(self.image, self.image.get_rect(topleft=self.screen_pos))
 
         if self.manager.debug:
             pygame.draw.circle(self.manager.screen, (0, 255, 255), (self.pos - self.scene.camera.pos).rotate(self.scene.camera.rot) + SIZE // 2, 5)
