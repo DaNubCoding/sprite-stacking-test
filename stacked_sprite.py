@@ -55,16 +55,9 @@ class StackedSprite(VisibleSprite):
             width, height = image.get_size()
             mask = pygame.mask.from_surface(image)
             for x, y in range_2d(width, height):
-                has_color = mask.get_at((x, y))
-                if not has_color: continue
-                side_pixels = {
-                    "left": mask.get_at((x - 1, y)) if x > 0 else False, 
-                    "right": mask.get_at((x + 1, y)) if x < width - 1 else False,
-                    "top": mask.get_at((x, y - 1)) if y > 0 else False,
-                    "bottom": mask.get_at((x, y + 1)) if y < height - 1 else False
-                }
-                for side, has_color in side_pixels.items():
-                    if has_color: continue
+                if not mask.get_at((x, y)): continue
+                for side, func in get_side_pixel.items():
+                    if func(mask, x, y, width, height): continue
                     edges[i][side].set_at((x, y), transform_color(lambda x: x * (1 - SHADING[side]), image.get_at((x, y))))
                     break
 

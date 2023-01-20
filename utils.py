@@ -26,6 +26,13 @@ def sublists(l: list) -> Generator:
 def transform_color(func: Callable, color: tuple[int, int, int]) -> tuple[int, int, int]:
     return func(color[0]), func(color[1]), func(color[2])
 
+get_side_pixel = {
+    "left": lambda mask, x, y, w, h: mask.get_at((x - 1, y)) if x > 0 else False,
+    "right": lambda mask, x, y, w, h: mask.get_at((x + 1, y)) if x < w - 1 else False,
+    "top": lambda mask, x, y, w, h: mask.get_at((x, y - 1)) if y > 0 else False,
+    "bottom": lambda mask, x, y, w, h: mask.get_at((x, y + 1)) if y < h - 1 else False
+}
+
 # The snap function snaps a value to a central value if it enters a certain offset around the central value
 @dispatch((int, float), (int, float), (int, float))
 def snap(val: int | float, snap_val: int | float, offset: int | float):
