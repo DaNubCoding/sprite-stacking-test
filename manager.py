@@ -1,9 +1,11 @@
-from pygame._sdl2.video import Window, Renderer
+from __future__ import annotations
+
 from pygame.locals import *
 from enum import Enum
 import pygame
 import sys
 
+from sdl2_video import Window, Renderer
 from main_game import MainGame
 from constants import *
 
@@ -14,8 +16,8 @@ class AbortScene(Exception):
 class Manager:
     def __init__(self) -> None:
         self.window = Window("Sprite Stacking Game", (WIDTH, HEIGHT))
-        self.screen = Renderer(self.window)
-        self.screen.draw_color = (30, 30, 30, 255)
+        self.renderer = Renderer(self.window)
+        self.renderer.draw_color = (30, 30, 30, 255)
         self.clock = pygame.time.Clock()
 
         self.scene = MainGame(self, None)
@@ -30,7 +32,7 @@ class Manager:
                 self.scene.draw()
             except AbortScene:
                 continue
-            self.screen.present()
+            self.renderer.present()
 
     def update(self) -> None:
         self.window.title = f"Sprite Stacking Game | {round(self.clock.get_fps())}"

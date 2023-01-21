@@ -18,16 +18,16 @@ class MainGame(Scene):
     def __init__(self, manager: Manager, previous_scene: Scene) -> None:
         super().__init__(manager, previous_scene, SortedSpriteManager)
 
-        Player.create_cache(self.manager.screen)
+        Player.create_cache(self.manager.renderer)
         self.player = Player(self)
         self.camera = Camera(self.player)
 
-        Building.create_cache(self.manager.screen)
+        Building.create_cache(self.manager.renderer)
         for x in range(-3000, 3001, 400):
             for y in range(-3000, 3001, 400):
                 Building(self, (x + randint(-80, 80), y + randint(-80, 80)), randint(0, 359))
 
-        Tree.create_cache(self.manager.screen)
+        Tree.create_cache(self.manager.renderer)
         for x in range(-3000 - 200, 3001 - 200, 400):
             for y in range(-3000 - 200, 3001 - 200, 400):
                 Tree(self, (x + randint(-80, 80), y + randint(-80, 80)), randint(0, 359))
@@ -37,5 +37,5 @@ class MainGame(Scene):
         super().update()
 
     def draw(self) -> None:
-        self.manager.screen.clear()
+        self.manager.renderer.clear()
         super().draw()

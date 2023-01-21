@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from scene import Scene
+    from manager import Renderer
 
 from pygame._sdl2.video import Texture
 from pygame.locals import *
@@ -12,6 +13,7 @@ from sprite import VisibleSprite, Layers
 from images import spritesheets
 from constants import *
 from utils import *
+import sdl2_video
 
 class CacheNotCreatedException(Exception):
     def __init__(self, cls) -> None:
@@ -37,7 +39,7 @@ class StackedSprite(VisibleSprite):
         self.image = self.cls._cache[int(self.rot)]
 
     @classmethod
-    def create_cache(cls, renderer) -> None:
+    def create_cache(cls, renderer: Renderer) -> None:
         try:
             cls._res, cls._size, cls._frames, cls._pixel, cls._pivot_offset
         except AttributeError as error:
@@ -72,7 +74,6 @@ class StackedSprite(VisibleSprite):
         for rot in range(360):
             rotated_size = VEC(pygame.transform.rotate(images[0], rot).get_size())
             surface = pygame.Surface((rotated_size.x, rotated_size.y + (cls._frames - 1) * cls._pixel), SRCALPHA)
-            surface.fill(COLORKEY)
             cls._pivot_cache[rot] = VEC(surface.get_width() // 2, surface.get_height() - rotated_size.y // 2) + cls._pivot_offset.rotate(-rot) * cls._pixel
             for i, image in enumerate(images):
                 shaded_image = image.copy()
@@ -81,7 +82,6 @@ class StackedSprite(VisibleSprite):
                 rotated_image = pygame.transform.rotate(shaded_image, rot)
                 for j in range(0, cls._pixel):
                     surface.blit(rotated_image, (0, surface.get_height() - rotated_size.y - i * cls._pixel - j))
-            surface.set_colorkey(COLORKEY)
             cls._cache[rot] = Texture.from_surface(renderer, surface)
 
         print(f"Cache for '{cls.__name__}' created in {round(time.time() - start, 5)} seconds")
@@ -92,8 +92,8 @@ class StackedSprite(VisibleSprite):
     def draw(self) -> None:
         self.image = self.cls._cache[screen_rot := int((self.rot - self.scene.camera.rot) % 360)]
         self.screen_pos = (self.pos - self.scene.camera.pos).rotate(self.scene.camera.rot) + SIZE // 2 - self.cls._pivot_cache[screen_rot]
-        if not -self.image.get_rect().width < self.screen_pos.x < WIDTH or not -self.image.get_rect().height < self.screen_pos.y < HEIGHT: return
-        self.manager.screen.blit(self.image, self.image.get_rect(topleft=self.screen_pos))
+        if not -self.image.width < self.screen_pos.x < WIDTH or not -self.image.height < self.screen_pos.y < HEIGHT: return
+        self.manager.renderer.blit(self.image, self.screen_pos)
 
         if self.manager.debug:
-            pygame.draw.circle(self.manager.screen, (0, 255, 255), (self.pos - self.scene.camera.pos).rotate(self.scene.camera.rot) + SIZE // 2, 5)
+            pygame.draw.circle(self.manager.renderer, (0, 255, 255), (self.pos - self.scene.camera.pos).rotate(self.scene.camera.rot) + SIZE // 2, 5)
